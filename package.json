@@ -1,0 +1,50 @@
+{
+	"name": "LzScripts",
+	"displayName": "Lazy Scripts",
+	"description": "Generates scripts from the results of select query",
+	"publisher": "Faith S. Yintii",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.39.0",
+				"azdata": "*"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:LzScripts.helloWorld",
+		"onCommand:LzScripts.showCurrentConnection"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "LzScripts.helloWorld",
+								"title": "Hello World"
+			},
+			{
+				"command": "LzScripts.showCurrentConnection",
+								"title": "Show Current Connection"
+			}
+		]
+	},
+	"scripts": {
+		"lint": "eslint .",
+		"pretest": "npm run lint",
+		"test": "node ./test/runTest.js",
+		"proposedapi": "node installTypings.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.39.0",
+		"@types/azdata": "*",
+		"@types/glob": "^7.1.4",
+		"@types/mocha": "^9.0.0",
+		"@types/node": "^13.11.0",
+		"eslint": "^6.8.0",
+		"glob": "^7.1.7",
+		"mocha": "^9.1.0",
+		"typescript": "^4.3.5",
+		"azdata-test": "^1.x"
+		}
+
+}
