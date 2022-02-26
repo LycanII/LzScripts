@@ -1,10 +1,12 @@
-'use strict';
+
 const azdata = require('azdata');
 
 async function runForInsert(connection, query) {
     let insetStr = [];
-    let ins = 'insert into '+getTableName(query) +' (';
     let data = await runQuery(connection, query);
+    let table = getTableName(query);
+    let ins = 'insert into '+ table + ' (';
+
     //--> get cols expect identity , autogen cols
     for (let i = 0; i < data.columnInfo.length; i++) {
         if(data.columnInfo[i].isAutoIncrement !== true && data.columnInfo[i].isIdentity !== true )
@@ -18,10 +20,10 @@ async function runForInsert(connection, query) {
         let dataStr ='values ('
         for (let col = 0; col < data.columnInfo.length; col++) {
             if(data.columnInfo[col].isAutoIncrement !== true && data.columnInfo[col].isIdentity !== true )
-            dataStr += (' ' +( 
+            dataStr += (' ' + ( 
                 data.rows[row][col].isNull ===true ? 'Null' :
-                getValue(data.rows[row][col].displayValue,data.columnInfo[col])
-            ) + ' ,');
+                getValue(data.rows[row][col].displayValue,data.columnInfo[col]) ) 
+            + ' ,');
         }
        
         dataStr = dataStr.slice(0, dataStr.length - 1);
@@ -48,13 +50,13 @@ function getValue(displayValue,colinfo) {
             return `'${displayValue}'`;
 
     }
-   
-}
+};
 
 function getTableName(query) {
-    let ql = query.toLowerCase();
-    let s = query.slice(ql.indexOf('from'), query.length - 1)
-    return '';
+    let ql = 'select top 2 * from dbo.ItemAmounts';
+    let dexFrom = ql.indexOf('from');
+    let dexWhere = ql.indexOf('where');
+    return ql.slice(dexFrom+4 , (dexWhere > 0 ? dexWhere : ql.length ));
 }
 module.exports.runForInsert = runForInsert;
 module.exports.runQuery = runQuery;
