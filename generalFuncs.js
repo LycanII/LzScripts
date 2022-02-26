@@ -53,7 +53,7 @@ function getValue(displayValue,colinfo) {
 };
 
 function getTableName(query) {
-    let ql = 'select top 2 * from dbo.ItemAmounts';
+    let ql = query.toLowerCase();
     let dexFrom = ql.indexOf('from');
     let dexWhere = ql.indexOf('where');
     return ql.slice(dexFrom+4 , (dexWhere > 0 ? dexWhere : ql.length ));
