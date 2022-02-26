@@ -3,7 +3,7 @@ const azdata = require('azdata');
 
 async function runForInsert(connection, query) {
     let insetStr = [];
-    let ins = 'insert into [';
+    let ins = 'insert into '+getTableName(query) +' (';
     let data = await runQuery(connection, query);
     //--> get cols expect identity , autogen cols
     for (let i = 0; i < data.columnInfo.length; i++) {
@@ -12,17 +12,24 @@ async function runForInsert(connection, query) {
     }
 
     ins = ins.slice(0, ins.length - 1); //--> remove last comma
-    ins = ins + '] \n values []';
+    ins = ins + ') \n';
     //--> look at data
     for (let row = 0; row < data.rowCount; row++) {
+        let dataStr ='values ('
         for (let col = 0; col < data.columnInfo.length; col++) {
             if(data.columnInfo[col].isAutoIncrement !== true && data.columnInfo[col].isIdentity !== true )
-                ins += (' ' + getValue(data.rows[row][col].displayValue,data.columnInfo[col]) + ' ,');
+            dataStr += (' ' +( 
+                data.rows[row][col].isNull ===true ? 'Null' :
+                getValue(data.rows[row][col].displayValue,data.columnInfo[col])
+            ) + ' ,');
         }
-
+       
+        dataStr = dataStr.slice(0, dataStr.length - 1);
+        dataStr = dataStr + '); \n ';
+        insetStr.push(ins + dataStr);
     }
-
-    return ins;
+    
+    return insetStr;
 };
 async function runQuery(connection, query) {
     //let connectionResult = await azdata.connection.connect(connection, false, false);
@@ -38,14 +45,19 @@ function getValue(displayValue,colinfo) {
         case "money": case "decimal": case "float": 
             return parseFloat(displayValue);
         default:
-            return displayValue;
+            return `'${displayValue}'`;
 
     }
    
 }
 
-
+function getTableName(query) {
+    let ql = query.toLowerCase();
+    let s = query.slice(ql.indexOf('from'), query.length - 1)
+    return '';
+}
 module.exports.runForInsert = runForInsert;
 module.exports.runQuery = runQuery;
+
 
 

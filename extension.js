@@ -16,7 +16,8 @@ function activate(context) {
                     let editor = vscode.window.activeTextEditor;
 
                     editor.edit(edit => {
-                        edit.insert(new vscode.Position(0, 0), res);
+
+                        edit.insert(new vscode.Position(0, 0), res.join('\n'));
                     });
                 });
             }).catch(err => {
