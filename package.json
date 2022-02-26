@@ -12,21 +12,25 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:LzScripts.helloWorld",
-		"onCommand:LzScripts.showCurrentConnection"
+		"onCommand:LzScripts.InsertFromScript"
 	],
 	"main": "./extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "LzScripts.helloWorld",
-								"title": "Hello World"
-			},
+				"command": "LzScripts.InsertFromScript",
+				"title": "Generate Insert from Result"
+			}
+		],"menus": {
+		"editor/context": [
 			{
-				"command": "LzScripts.showCurrentConnection",
-								"title": "Show Current Connection"
+				"command": "LzScripts.InsertFromScript",
+				"when": "editorHasSelection",
+				"group": "1data1"
 			}
 		]
+		}
+		
 	},
 	"scripts": {
 		"lint": "eslint .",
