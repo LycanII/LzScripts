@@ -12,33 +12,12 @@ function activate(context) {
             runForInsert(con, text)
             .then(res => {
                 vscode.commands.executeCommand('newQuery').then(s => {
-
                     let editor = vscode.window.activeTextEditor;
-
-                    editor.edit(edit => {
-
-                        edit.insert(new vscode.Position(0, 0), res.join('\n'));
-                    });
+                    editor.edit(edit => { edit.insert(new vscode.Position(0, 0), res.join('\n'));  });
                 });
-            }).catch(err => {
-                vscode.window.showErrorMessage(err);
-            }
-        );
+            }).catch(err => { vscode.window.showErrorMessage(err.message);  } );
         });
-        // general.runQuery(connectionProfile, text)
-        //     .then(res => {
-        //         vscode.commands.executeCommand('newQuery').then(s => {
 
-        //             let editor = vscode.window.activeTextEditor;
-
-        //             editor.edit(edit => {
-        //                 edit.insert(new vscode.Position(0, 0), res);
-        //             });
-        //         });
-        //     }).catch(err => {
-        //         vscode.window.showErrorMessage(err);
-        //     }
-        // );
 
     })
     );
