@@ -11,7 +11,9 @@ In the editor, simply select, right click on the sql scrip and click on the `Gen
 ![Generate Insert from Result](https://user-images.githubusercontent.com/49438182/155882668-4a1c5c7a-5865-4182-ac21-0c867ce9590b.png)
 
 
-### Note 
+### Note
+* This was done in One caffine fueled weekend, hence it's likely buggy and is provided as is. Kindly prompt me, by opening an issue if it's acting up.
+* Currently supports only `MSSQL`.
 * Supports only the `dbo` database schema if added.
 * Uses the first table it finds after the `from` clause in your select query as the target table for Insert.
   So `select * from table` and `select * from databaseName.dbo.table` is supported. See below for more examples.
@@ -30,5 +32,12 @@ where t1.ItemID in (
   select top (20) t2.ItemID from table2 t2 
 ) 
 ```
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/LycanII/LzScripts/blob/61a028724d4da801a4d771903f2eaefad8f39d54/LICENSE) file for details
+
+
+## Acknowledgments
+- This project was higly inspired by the [extraSqlScriptAs](https://github.com/pacoweb/extraSqlScriptAs) by [pacoweb](https://github.com/pacoweb)
 
 **Enjoy!**
