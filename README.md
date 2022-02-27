@@ -38,6 +38,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://ra
 
 
 ## Acknowledgments
-- This project was higly inspired by the [extraSqlScriptAs](https://github.com/pacoweb/extraSqlScriptAs) by [pacoweb](https://github.com/pacoweb)
+- This project was higly inspired by the [extraSqlScriptAs Extension](https://github.com/pacoweb/extraSqlScriptAs) by [pacoweb](https://github.com/pacoweb)
 
 **Enjoy!**
