@@ -4,6 +4,11 @@
 	"description": "Generates scripts from the results of select query",
 	"publisher": "Faith S. Yintii",
 	"version": "0.0.1",
+	"license": "https://github.com/LycanII/LzScripts/blob/bdf7741c1adda24a3ddcbf50fd786fefbfb9bc83/LICENSE",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/LycanII/LzScripts.git"
+	},
 	"engines": {
 		"vscode": "^1.39.0",
 				"azdata": "*"
