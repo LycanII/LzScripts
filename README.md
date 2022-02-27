@@ -34,7 +34,7 @@ where t1.ItemID in (
 ```
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/LycanII/LzScripts/blob/61a028724d4da801a4d771903f2eaefad8f39d54/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://raw.githubusercontent.com/LycanII/LzScripts/master/LICENSE) file for details
 
 
 ## Acknowledgments
