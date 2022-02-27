@@ -5,6 +5,7 @@
 	"publisher": "Faith S. Yintii",
 	"version": "0.0.1",
 	"license": "https://github.com/LycanII/LzScripts/blob/bdf7741c1adda24a3ddcbf50fd786fefbfb9bc83/LICENSE",
+	"icon": "images/default_icon.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/LycanII/LzScripts.git"
