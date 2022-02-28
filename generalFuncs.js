@@ -4,21 +4,25 @@ const azdata = require('azdata');
 async function runForInsert(connection, query) {
     let insetStr = [];
 
-
     //--> the place of sadness :(
     let tableFull = getTableName(query);
-    let table = tableFull.indexOf('dbo') > 0 ? tableFull.slice(tableFull.indexOf('dbo') + 4) : tableFull;
+
+    let table = tableFull.indexOf('dbo') >= 0 ? tableFull.slice(tableFull.indexOf('dbo') + 4) : tableFull;
     let tblExist = await tableExists(connection, table);
     if (!tblExist)
-        throw new Error('Target Table not found,try advance option');
+        throw new Error('Target Table not found');
     //--> the place of sadness :(
 
     let data = await runQuery(connection, query);
+
+    if(data.rowCount==0)
+        throw new Error('No records found');
+
     let ins = 'insert into ' + tableFull + ' (';
 
     //--> get cols except identity , autogen cols
     for (let i = 0; i < data.columnInfo.length; i++) {
-        if (data.columnInfo[i].isAutoIncrement !== true && data.columnInfo[i].isIdentity !== true)
+        if (data.columnInfo[i].isAutoIncrement !== true && data.columnInfo[i].isIdentity !== true && data.columnInfo[i].dataTypeName!='timestamp')
             ins += (' ' + data.columnInfo[i].columnName + ' ,');
     }
     //--> remove last comma
@@ -28,8 +32,8 @@ async function runForInsert(connection, query) {
     for (let row = 0; row < data.rowCount; row++) {
         let dataStr = 'values ('
         for (let col = 0; col < data.columnInfo.length; col++) {
-            if (data.columnInfo[col].isAutoIncrement !== true && data.columnInfo[col].isIdentity !== true)
-                dataStr += (' ' + (
+            if (data.columnInfo[col].isAutoIncrement !== true && data.columnInfo[col].isIdentity !== true && data.columnInfo[col].dataTypeName!='timestamp')
+                dataStr += (`/* ${data.columnInfo[col].columnName} */` + (
                     data.rows[row][col].isNull === true ? 'Null' :
                         getValue(data.rows[row][col].displayValue, data.columnInfo[col]))
                     + ' ,');
@@ -63,10 +67,16 @@ async function tableExists(connection, table) {
 }
 function getValue(displayValue, colinfo) {
     switch (colinfo.dataTypeName) {
-        case "int": case "bigint": case "bit":
+        case "int": case "bigint": case "bit": case "binary":
             return parseInt(displayValue);
         case "money": case "decimal": case "float":
             return parseFloat(displayValue);
+        case "nvarchar": 
+            return `N'${displayValue}'`;
+        case "image": 
+            return `cast('${displayValue}' as image)`;
+        case "varbinary": 
+            return `cast('${displayValue}' as varbinary(${colinfo.columnSize})`;
         default:
             return `'${displayValue}'`;
 
