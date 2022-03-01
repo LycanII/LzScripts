@@ -2,17 +2,17 @@
 
 ## An Sql Script Generator for Azure Data Studio
 
-Here's a simple script generator for lazy devs like moi :)
-As at now it generates Insert Queries from a select query. The idea here is to allow quick insert scripts to be genterated from a select query.
+Here's a simple script generator for lazy devs like moi :) .
+As at now it generates Insert queries from a select query. The idea here is to allow  insert scripts to be genterated quickly from a select query.
 
 ### How to Use
-In the editor, simply select, right click on the sql scrip and click on the `Generate Insert from Result` context menu.
+In the editor, simply select, right click on the sql script and click on the `Generate Insert from Result` context menu.
 
 ![Generate Insert from Result](https://user-images.githubusercontent.com/49438182/155882668-4a1c5c7a-5865-4182-ac21-0c867ce9590b.png)
 
 
 ### Note
-* This was done in One caffine fueled weekend, hence it's likely buggy and is provided as is. Kindly prompt me, by opening an issue if it's acting up.
+* This was done in One caffine-fueled weekend, hence it's likely buggy and is provided as is. Kindly prompt me, by opening an issue if it's acting up.
 * Currently supports only `MSSQL`.
 * Supports only the `dbo` database schema if added.
 * Uses the first table it finds after the `from` clause in your select query as the target table for Insert.
@@ -23,7 +23,7 @@ In the editor, simply select, right click on the sql scrip and click on the `Gen
 ```
 select t1.* from table1 t1
 inner join table2 t2 on t1.ItemID  = t2.ItemID
-where i.ItemID = 10 
+where t1.ItemID = 10 
 ```
 `with subqueries`
 ```
