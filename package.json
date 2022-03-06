@@ -1,60 +1,78 @@
 {
-	"name": "lz-scripts",
-	"displayName": "Lazy Scripts",
-	"description": "Generates scripts from the results of select query",
-	"publisher": "Faith S. Yintii",
-	"version": "0.0.1",
-	"license": "https://github.com/LycanII/LzScripts/blob/bdf7741c1adda24a3ddcbf50fd786fefbfb9bc83/LICENSE",
-	"icon": "images/default_icon.png",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/LycanII/LzScripts.git"
-	},
-	"engines": {
-		"vscode": "^1.39.0",
-				"azdata": "*"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:LzScripts.InsertFromScript"
-	],
-	"main": "./extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "LzScripts.InsertFromScript",
-				"title": "Generate Insert from Result"
-			}
-		],"menus": {
-		"editor/context": [
-			{
-				"command": "LzScripts.InsertFromScript",
-				"when": "editorHasSelection",
-				"group": "1data1"
-			}
-		]
-		}
-		
-	},
-	"scripts": {
-		"lint": "eslint .",
-		"pretest": "npm run lint",
-		"test": "node ./test/runTest.js",
-		"proposedapi": "node installTypings.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.39.0",
-		"@types/azdata": "*",
-		"@types/glob": "^7.1.4",
-		"@types/mocha": "^9.0.0",
-		"@types/node": "^13.11.0",
-		"eslint": "^6.8.0",
-		"glob": "^7.1.7",
-		"mocha": "^9.1.0",
-		"typescript": "^4.3.5",
-		"azdata-test": "^1.x"
-		}
-
+  "name": "lz-scripts",
+  "displayName": "Lazy Scripts",
+  "description": "Generates scripts from the results of select query",
+  "publisher": "Faith S. Yintii",
+  "version": "1.1.0",
+  "license": "https://github.com/LycanII/LzScripts/blob/bdf7741c1adda24a3ddcbf50fd786fefbfb9bc83/LICENSE",
+  "icon": "images/default_icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LycanII/LzScripts.git"
+  },
+  "engines": {
+    "vscode": "^1.39.0",
+    "azdata": "*"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:LzScripts.InsertToClip",
+    "onCommand:LzScripts.InsertToNewTab"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "LzScripts.InsertToClip",
+        "title": "To Clipbord"
+      },
+      {
+        "command": "LzScripts.InsertToNewTab",
+        "title": "To New Tab"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "LzScripts.InsertFrom",
+          "when": "editorHasSelection",
+          "group": "1data1"
+        }
+      ],
+      "LzScripts.InsertFrom": [
+        {
+          "command": "LzScripts.InsertToClip"
+        },
+        {
+          "command": "LzScripts.InsertToNewTab"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "LzScripts.InsertFrom",
+        "label": "Generte Insert from Results"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js",
+    "proposedapi": "node installTypings.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.39.0",
+    "@types/azdata": "*",
+    "@types/glob": "^7.1.4",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^13.11.0",
+    "eslint": "^6.8.0",
+    "glob": "^7.1.7",
+    "mocha": "^9.1.0",
+    "typescript": "^4.3.5",
+    "azdata-test": "^1.x"
+  }
 }

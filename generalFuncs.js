@@ -7,14 +7,16 @@ async function runForInsert(connection, query) {
     //--> the place of sadness :(
     let tableFull = getTableName(query);
 
-    let table = tableFull.indexOf('dbo') >= 0 ? tableFull.slice(tableFull.indexOf('dbo') + 4) : tableFull;
+    let table = tableFull.indexOf('dbo') >= 0 ? 
+    tableFull.slice(tableFull.indexOf('dbo') + 4).replace('.','').replace('[','').replace(']','') 
+    : tableFull.replace('.','').replace('[','').replace(']','');
+
     let tblExist = await tableExists(connection, table);
     if (!tblExist)
         throw new Error('Target Table not found');
     //--> the place of sadness :(
 
     let data = await runQuery(connection, query);
-
     if(data.rowCount==0)
         throw new Error('No records found');
 
@@ -22,7 +24,7 @@ async function runForInsert(connection, query) {
 
     //--> get cols except identity , autogen cols
     for (let i = 0; i < data.columnInfo.length; i++) {
-        if (data.columnInfo[i].isAutoIncrement !== true && data.columnInfo[i].isIdentity !== true && data.columnInfo[i].dataTypeName!='timestamp')
+        if (data.columnInfo[i].isAutoIncrement !== true && data.columnInfo[i].isIdentity !== true && data.columnInfo[i].dataTypeName!=='timestamp')
             ins += (' ' + data.columnInfo[i].columnName + ' ,');
     }
     //--> remove last comma
@@ -32,7 +34,7 @@ async function runForInsert(connection, query) {
     for (let row = 0; row < data.rowCount; row++) {
         let dataStr = 'values ('
         for (let col = 0; col < data.columnInfo.length; col++) {
-            if (data.columnInfo[col].isAutoIncrement !== true && data.columnInfo[col].isIdentity !== true && data.columnInfo[col].dataTypeName!='timestamp')
+            if (data.columnInfo[col].isAutoIncrement !== true && data.columnInfo[col].isIdentity !== true && data.columnInfo[col].dataTypeName!=='timestamp')
                 dataStr += (`/* ${data.columnInfo[col].columnName} */` + (
                     data.rows[row][col].isNull === true ? 'Null' :
                         getValue(data.rows[row][col].displayValue, data.columnInfo[col]))
@@ -67,9 +69,9 @@ async function tableExists(connection, table) {
 }
 function getValue(displayValue, colinfo) {
     switch (colinfo.dataTypeName) {
-        case "int": case "bigint": case "bit": case "binary":
+        case "int": case "bigint": case "bit": case "binary": case "tinyint":
             return parseInt(displayValue);
-        case "money": case "decimal": case "float":
+        case "money": case "decimal": case "float": case "smallmoney": case "numeric":
             return parseFloat(displayValue);
         case "nvarchar": 
             return `N'${displayValue}'`;
@@ -86,9 +88,13 @@ function getTableName(query) {
     let ql = query.toLowerCase();
     let indexFrom = ql.indexOf('from');
     let indexJoin = ql.indexOf('join');
+    let indexOrder = ql.indexOf('order');
     if(indexJoin > 0 )
         return ql.slice(indexFrom + 4, (indexJoin > 0 ? indexJoin : ql.length)).trim().split(' ')[0];
-        
+
+    if(indexOrder > 0 )
+        return ql.slice(indexFrom + 4, (indexOrder > 0 ? indexOrder : ql.length)).trim().split(' ')[0];   
+
     let indexWhere = ql.indexOf('where');
     return ql.slice(indexFrom + 4, (indexWhere > 0 ? indexWhere : ql.length)).trim().split(' ')[0];
 }
