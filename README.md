@@ -6,7 +6,7 @@ Here's a simple script generator for lazy devs like moi :) .
 As at now it generates Insert queries from a select query. The idea here is to allow  insert scripts to be genterated quickly from a select query.
 
 ### How to Use
-In the editor, simply select, right click on the sql script and click on the `Generate Insert from Result` context menu.
+In the editor, simply select, right click on the sql script and click on the `Generate Insert from Result` context menu, Select `To Clipboard` or `To New Tab` to generate query to clipboard or to a new tab.
 
 ![Generate Insert from Result](https://user-images.githubusercontent.com/49438182/155882668-4a1c5c7a-5865-4182-ac21-0c867ce9590b.png)
 
@@ -39,5 +39,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://ra
 
 ## Acknowledgments
 - This project was higly inspired by the [extraSqlScriptAs Extension](https://github.com/pacoweb/extraSqlScriptAs) by [pacoweb](https://github.com/pacoweb)
+- Much Thanks to Eugene :)
 
 **Enjoy!**

@@ -26,7 +26,7 @@
     "commands": [
       {
         "command": "LzScripts.InsertToClip",
-        "title": "To Clipbord"
+        "title": "To Clipboard"
       },
       {
         "command": "LzScripts.InsertToNewTab",
