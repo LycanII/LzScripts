@@ -2,7 +2,7 @@
 
 ## An Sql Script Generator for Azure Data Studio
 
-Here's a simple script generator for lazy devs like moi :) .
+Here's a simple script generator for lazy devs like moi 😊.
 As at now it generates Insert queries from a select query. The idea here is to allow  insert scripts to be genterated quickly from a select query.
 
 ### How to Use
@@ -39,6 +39,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://ra
 
 ## Acknowledgments
 - This project was higly inspired by the [extraSqlScriptAs Extension](https://github.com/pacoweb/extraSqlScriptAs) by [pacoweb](https://github.com/pacoweb)
-- Much Thanks to Eugene :)
+- Much Thanks to Eugene 👌 
 
 **Enjoy!**
