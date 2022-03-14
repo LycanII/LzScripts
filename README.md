@@ -38,7 +38,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://ra
 
 
 ## Acknowledgments
-- This project was higly inspired by the [extraSqlScriptAs Extension](https://github.com/pacoweb/extraSqlScriptAs) by [pacoweb](https://github.com/pacoweb)
-- Much Thanks to Eugene 👌 
+- This project was highly inspired by the [extraSqlScriptAs Extension](https://github.com/pacoweb/extraSqlScriptAs) by [pacoweb](https://github.com/pacoweb)
+- Much Thanks to Eugene the Sql Doctor 👌 
 
 **Enjoy!**
