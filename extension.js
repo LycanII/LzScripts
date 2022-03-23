@@ -9,14 +9,24 @@ function activate(context) {
         var selection = editor.selection;
         var text = editor.document.getText(selection);
         azdata.connection.getCurrentConnection().then(con => {
-            runForInsert(con, text)
-                .then(res => {
-
-                    vscode.env.clipboard.writeText(res.join('\n')).then((text) => {
-                        vscode.window.showInformationMessage('Script copied to clipboard!');
+            vscode.window.withProgress({ location: vscode.ProgressLocation.Notification },
+                async (progress) => {
+                    progress.report({
+                        message: 'Running Script!',
                     });
+                    await runForInsert(con, text)
+                        .then(res => {
 
-                }).catch(err => { vscode.window.showErrorMessage(err.message); });
+                            vscode.env.clipboard.writeText(res.join('\n')).then((text) => {
+                               vscode.window.showInformationMessage('Script copied to Clipboard!');
+                            });
+
+                        }).catch(err => { vscode.window.showErrorMessage(err.message); });
+                
+                        
+                }
+            );
+
         });
 
     }));
@@ -26,13 +36,24 @@ function activate(context) {
         var selection = editor.selection;
         var text = editor.document.getText(selection);
         azdata.connection.getCurrentConnection().then(con => {
-            runForInsert(con, text)
-                .then(res => {
-                    vscode.commands.executeCommand('newQuery').then(s => {
-                        let editor = vscode.window.activeTextEditor;
-                        editor.edit(edit => { edit.insert(new vscode.Position(0, 0), res.join('\n')); });
-                    });
-                }).catch(err => { vscode.window.showErrorMessage(err.message); });
+                vscode.window.withProgress({ location: vscode.ProgressLocation.Notification },
+                    async (progress) => {
+                        progress.report({
+                            message: 'Running Script!',
+                        });
+                        await runForInsert(con, text)
+                            .then(res => {
+                                
+                                vscode.commands.executeCommand('newQuery').then(s => {
+                                    let editor = vscode.window.activeTextEditor;
+                                    editor.edit(edit => { edit.insert(new vscode.Position(0, 0), res.join('\n')); });
+                                    vscode.window.showInformationMessage('Script copied to New Tab!');
+                                });
+                            }).catch(err => { vscode.window.showErrorMessage(err.message); });
+    
+                    }
+                );    
+                
         });
 
     }));

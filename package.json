@@ -53,7 +53,7 @@
     "submenus": [
       {
         "id": "LzScripts.InsertFrom",
-        "label": "Generte Insert from Results"
+        "label": "Generate Insert from Results"
       }
     ]
   },
