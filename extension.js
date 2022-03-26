@@ -16,7 +16,6 @@ function activate(context) {
                     });
                     await runForInsert(con, text)
                         .then(res => {
-
                             vscode.env.clipboard.writeText(res.join('\n')).then((text) => {
                                vscode.window.showInformationMessage('Script copied to Clipboard!');
                             });

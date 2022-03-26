@@ -1,6 +1,10 @@
 
 const azdata = require('azdata');
 
+/**
+ * @param {azdata.connection.ConnectionProfile} connection
+ * @param {string} query
+ */
 async function runForInsert(connection, query) {
     let insetStr = [];
 
@@ -36,7 +40,7 @@ async function runForInsert(connection, query) {
         for (let col = 0; col < data.columnInfo.length; col++) {
             if (data.columnInfo[col].isAutoIncrement !== true && data.columnInfo[col].isIdentity !== true && data.columnInfo[col].dataTypeName!=='timestamp')
                 dataStr += (`/* ${data.columnInfo[col].columnName} */` + (
-                    data.rows[row][col].isNull === true ? 'Null' :
+                    data.rows[row][col].isNull === true ? 'null' :
                         getValue(data.rows[row][col].displayValue, data.columnInfo[col]))
                     + ' ,');
         }
@@ -48,16 +52,30 @@ async function runForInsert(connection, query) {
 
     return insetStr;
 }
+/**
+ * @param {azdata.connection.ConnectionProfile} connection
+ * @param {string} query
+ */
 async function runQuery(connection, query) {
 
     try {
+        if(connection== null)
+            throw new Error('No Connection Found');
+        let conProvider = azdata.dataprotocol.getProvider(connection.providerId, azdata.DataProviderType.ConnectionProvider);
+        await conProvider.changeDatabase(connection.connectionId,connection.databaseName);
         let connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
-        let queryProvider = azdata.dataprotocol.getProvider('MSSQL', azdata.DataProviderType.QueryProvider);
+
+
+        let queryProvider = azdata.dataprotocol.getProvider(connection.providerId, azdata.DataProviderType.QueryProvider);
         return await queryProvider.runQueryAndReturn(connectionUri, query);
     } catch (error) {
-        throw new Error('Connection Error');
+        throw new Error(`Error : ${error.message}`);
     }
 }
+/**
+ * @param {azdata.connection.ConnectionProfile} connection
+ * @param {string} table
+ */
 async function tableExists(connection, table) {
     let qstr = `IF EXISTS (SELECT 1 
         FROM INFORMATION_SCHEMA.TABLES 
@@ -74,13 +92,13 @@ function getValue(displayValue, colinfo) {
         case "money": case "decimal": case "float": case "smallmoney": case "numeric":
             return parseFloat(displayValue);
         case "nvarchar": 
-            return `N'${displayValue}'`;
+            return `N'${displayValue.replace("'","''")}'`;
         case "image": 
             return `cast('${displayValue}' as image)`;
         case "varbinary": 
             return `cast('${displayValue}' as varbinary(${colinfo.columnSize})`;
         default:
-            return `'${displayValue}'`;
+            return `'${displayValue.replace("'","''")}'`;
 
     }
 }
