@@ -23,6 +23,16 @@
   ],
   "main": "./extension.js",
   "contributes": {
+    "configuration": {
+      "title": "LzScripts",
+      "properties": {
+        "LzScripts.addIdentityColumns": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include Identity Columns in generated script"
+        }
+      }
+    },
     "commands": [
       {
         "command": "LzScripts.InsertToClip",
