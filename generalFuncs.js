@@ -12,8 +12,8 @@ async function runForInsert(connection, query) {
     let tableFull = getTableName(query);
 
     let table = tableFull.indexOf('dbo') >= 0 ? 
-    tableFull.slice(tableFull.indexOf('dbo') + 4).replace('.','').replace('[','').replace(']','') 
-    : tableFull.replace('.','').replace('[','').replace(']','');
+    tableFull.slice(tableFull.indexOf('dbo') + 4).replaceAll('.','').replaceAll('[','').replaceAll(']','') 
+    : tableFull.replaceAll('.','').replaceAll('[','').replaceAll(']','');
 
     let tblExist = await tableExists(connection, table);
     if (!tblExist)
@@ -92,13 +92,13 @@ function getValue(displayValue, colinfo) {
         case "money": case "decimal": case "float": case "smallmoney": case "numeric":
             return parseFloat(displayValue);
         case "nvarchar": 
-            return `N'${displayValue.replace("'","''")}'`;
+            return `N'${displayValue.replaceAll("'","''")}'`;
         case "image": 
             return `cast('${displayValue}' as image)`;
         case "varbinary": 
             return `cast('${displayValue}' as varbinary(${colinfo.columnSize})`;
         default:
-            return `'${displayValue.replace("'","''")}'`;
+            return `'${displayValue.replaceAll("'","''")}'`;
 
     }
 }
