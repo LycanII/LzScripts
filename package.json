@@ -3,7 +3,7 @@
   "displayName": "Lazy Scripts",
   "description": "Generates scripts from the results of select query",
   "publisher": "Faith S. Yintii",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "license": "https://github.com/LycanII/LzScripts/blob/bdf7741c1adda24a3ddcbf50fd786fefbfb9bc83/LICENSE",
   "icon": "images/default_icon.png",
   "repository": {

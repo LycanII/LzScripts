@@ -58,7 +58,7 @@ async function runForInsert(connection, query) {
         insetStr.push(ins + dataStr);
     }
 
-    return PostProcessing(insetStr,table,vscode.workspace.getConfiguration('LzScripts'));
+    return PostProcessing(insetStr,tableFull,vscode.workspace.getConfiguration('LzScripts'));
 }
 
 
