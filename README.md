@@ -8,7 +8,7 @@ It generates Insert queries from a select query. The idea here is to allow inser
 ### How to Use
 In the editor, simply select, right-click on the SQL script and click on the `Generate Insert from Result` context menu, Select `To Clipboard` or `To New Tab` to generate query to the clipboard or a new tab respectively.
 
-![Generate Insert from Result](https://raw.githubusercontent.com/LycanII/LzScripts/5c7dabc293b459e32c9ce7e2c9ad3b7f18b87a98/images/contex_2.png)
+![Generate Insert from Result](https://raw.githubusercontent.com/LycanII/LzScripts/810e72cfe85a8267a0b35c947893d7f8f867535d/images/contex_2.png)
 
 
 ### Note
