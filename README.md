@@ -32,6 +32,24 @@ where t1.ItemID in (
   select top (20) t2.ItemID from table2 t2 
 ) 
 ```
+
+### Change Log
+
+#### [1.0.0]
+
+* Initial release
+
+#### [1.1.0]
+
+* Added Copy to Clipbord feature
+
+#### [1.2.0]
+
+* Added support for strings with single quotes
+* Added Progress notification.
+* Added Settings to enable export of identity columns(Disabled by default),
+to enable go to Settings page `Ctl+,`. Under the `Extensions > LzScripts` section.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](https://raw.githubusercontent.com/LycanII/LzScripts/master/LICENSE) file for details
