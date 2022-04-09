@@ -48,7 +48,7 @@ where t1.ItemID in (
 * Added support for strings with single quotes
 * Added Progress notification.
 * Added Settings to enable export of identity columns(Disabled by default),
-to enable go to Settings page `Ctl+,`. Under the `Extensions > LzScripts` section.
+to enable go to Settings page `Ctl+,`. Under the `Extensions > LzScripts` section [see release](https://github.com/LycanII/LzScripts/releases/tag/v.1.2.0).
 
 ## License
 
