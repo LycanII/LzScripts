@@ -14,7 +14,7 @@ In the editor, simply select, right-click on the SQL script and click on the `Ge
 ### Note
 * This was done in one caffeine-fueled weekend, so pardon any bugs and prompt me by opening an issue if it acts up.
 * Currently supports only `MSSQL`.
-* Supports only the `dbo` database schema if added.
+* Supports any database schema if added.
 * Uses the first table it finds after the `from` clause in your select query as the target table for Insert.
   So `select * from table` and `select * from databaseName.dbo.table` is supported. See below for more examples.
  
