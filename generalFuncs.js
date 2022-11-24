@@ -7,19 +7,23 @@ const vscode = require('vscode');
  */
 async function runForInsert(connection, query) {
     let allowIdentity = vscode.workspace.getConfiguration('LzScripts').get('addIdentityColumns') === true;
+    let allowMultipleInsert = vscode.workspace.getConfiguration('LzScripts').get('allowInsertPerRow') === true;
     let insetStr = [];
 
-    //--> the place of sadness :(
-    let tableFull = getTableName(query);
+    let tableFull = getTableName(query).replaceAll(';','');
+    let breakdown = tableFull.split('.');
+    let table = breakdown[breakdown.length-1].replaceAll('[','').replaceAll(']','').replaceAll(';','');
 
-    let table = tableFull.indexOf('dbo') >= 0 ?
-        tableFull.slice(tableFull.indexOf('dbo') + 4).replaceAll('.', '').replaceAll('[', '').replaceAll(']', '')
-        : tableFull.replaceAll('.', '').replaceAll('[', '').replaceAll(']', '');
+    //--> the place of sadness :(
+    // let table = tableFull.indexOf('dbo') >= 0 ?
+    //     tableFull.slice(tableFull.indexOf('dbo') + 4).replaceAll('.', '').replaceAll('[', '').replaceAll(']', '')
+    //     : tableFull.replaceAll('.', '').replaceAll('[', '').replaceAll(']', '');
+    //--> the place of sadness :(
 
     let tblExist = await tableExists(connection, table);
     if (!tblExist)
         throw new Error('Target Table not found');
-    //--> the place of sadness :(
+
 
     let data = await runQuery(connection, query);
     if (data.rowCount == 0)
@@ -39,26 +43,53 @@ async function runForInsert(connection, query) {
     ins = ins.slice(0, ins.length - 1);
     ins = ins + ') \n';
     //--> look at data
-    for (let row = 0; row < data.rowCount; row++) {
-        let dataStr = 'values ('
-        for (let col = 0; col < data.columnInfo.length; col++) {
 
-            if (data.columnInfo[col].isIdentity === true && !allowIdentity)
-                continue;
+    if (allowMultipleInsert) {
+        for (let row = 0; row < data.rowCount; row++) {
+            let dataStr = 'values ('
+            for (let col = 0; col < data.columnInfo.length; col++) {
 
-            if (data.columnInfo[col].dataTypeName !== 'timestamp')
-                dataStr += (`/* ${data.columnInfo[col].columnName} */` + (
-                    data.rows[row][col].isNull === true ? 'null' :
-                        getValue(data.rows[row][col].displayValue, data.columnInfo[col]))
-                    + ' ,');
+                if (data.columnInfo[col].isIdentity === true && !allowIdentity)
+                    continue;
+
+                if (data.columnInfo[col].dataTypeName !== 'timestamp')
+                    dataStr += (`/* ${data.columnInfo[col].columnName} */ ` + (
+                        data.rows[row][col].isNull === true ? 'null' :
+                            getValue(data.rows[row][col].displayValue, data.columnInfo[col]))
+                        + ' ,');
+            }
+
+            dataStr = dataStr.slice(0, dataStr.length - 1);
+            dataStr = dataStr + '); \n ';
+            insetStr.push(ins + dataStr);
         }
+    } 
+    else
+    {
+        let dataStr = 'values '
+        for (let row = 0; row < data.rowCount; row++) {
+            dataStr += '( '
+            for (let col = 0; col < data.columnInfo.length; col++) {
 
-        dataStr = dataStr.slice(0, dataStr.length - 1);
-        dataStr = dataStr + '); \n ';
-        insetStr.push(ins + dataStr);
+                if (data.columnInfo[col].isIdentity === true && !allowIdentity)
+                    continue;
+
+                if (data.columnInfo[col].dataTypeName !== 'timestamp')
+                    dataStr += (`/* ${data.columnInfo[col].columnName} */ ` + (
+                        data.rows[row][col].isNull === true ? 'null' :
+                            getValue(data.rows[row][col].displayValue, data.columnInfo[col]))
+                        + ' ,');
+            }
+
+            dataStr = dataStr.slice(0, dataStr.length - 1);
+            dataStr = dataStr + ' ), \n';
+        }
+        //--> we remove 3 because we don't need the last \n
+        insetStr.push(ins + dataStr.slice(0, dataStr.length - 3) + ';');
     }
 
-    return PostProcessing(insetStr,tableFull,vscode.workspace.getConfiguration('LzScripts'));
+
+    return PostProcessing(insetStr, tableFull, vscode.workspace.getConfiguration('LzScripts'));
 }
 
 
@@ -67,12 +98,11 @@ async function runForInsert(connection, query) {
  * @param {vscode.WorkspaceConfiguration} config
  * @param {string} table
  */
-function PostProcessing(insetStr, table,config) {
+function PostProcessing(insetStr, table, config) {
     let allowIdentity = config.get('addIdentityColumns') === true;
-    if(allowIdentity)
-    {
-        insetStr.unshift(`set identity_insert ${table} on; \ngo \n`);
-        insetStr.push(`set identity_insert ${table} off; \ngo \n`);
+    if (allowIdentity) {
+        insetStr.unshift(`set identity_insert ${table} on; \ngo; \n`);
+        insetStr.push(`set identity_insert ${table} off; \ngo; \n`);
     }
 
     return insetStr;

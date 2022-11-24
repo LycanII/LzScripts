@@ -3,7 +3,7 @@
   "displayName": "Lazy Scripts",
   "description": "Generates scripts from the results of select query",
   "publisher": "Faith S. Yintii",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "license": "https://github.com/LycanII/LzScripts/blob/bdf7741c1adda24a3ddcbf50fd786fefbfb9bc83/LICENSE",
   "icon": "images/default_icon.png",
   "repository": {
@@ -30,6 +30,11 @@
           "type": "boolean",
           "default": false,
           "description": "Include Identity Columns in generated script"
+        },
+        "LzScripts.allowInsertPerRow": {
+          "type": "boolean",
+          "default": false,
+          "description": "Generate Insert for each data row found"
         }
       }
     },
