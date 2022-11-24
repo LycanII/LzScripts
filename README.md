@@ -3,7 +3,7 @@
 ## An Sql Script Generator for Azure Data Studio
 
 Here's a simple script generator for lazy devs like moi 😊.
-It generates Insert queries from a select query. The idea here is to allow insert scripts to be generated quickly from a select query.
+It generates Insert queries from a select query.
 
 ### How to Use
 In the editor, simply select, right-click on the SQL script and click on the `Generate Insert from Result` context menu, Select `To Clipboard` or `To New Tab` to generate query to the clipboard or a new tab respectively.
