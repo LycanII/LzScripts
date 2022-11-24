@@ -50,6 +50,10 @@ where t1.ItemID in (
 * Added Settings to enable export of identity columns(Disabled by default),
 to enable go to Settings page `Ctl+,`. Under the `Extensions > LzScripts` section [see release](https://github.com/LycanII/LzScripts/releases/tag/v.1.2.0).
 
+#### [1.3.0]
+- No longer restricted to dbo.
+- Generates a single insert with multiple values by default, you can disable this behavior, via the settings page, `Ctl+,`. Under the `Extensions > LzScripts`, section enable `Allow Insert Per Row`.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](https://raw.githubusercontent.com/LycanII/LzScripts/master/LICENSE) file for details
