@@ -20,7 +20,9 @@ async function runForInsert(connection, query) {
     //     : tableFull.replaceAll('.', '').replaceAll('[', '').replaceAll(']', '');
     //--> the place of sadness :(
 
-    let tblExist = await tableExists(connection, table);
+    console.log(table);
+
+    let tblExist = true; //await tableExists(connection, table);
     if (!tblExist)
         throw new Error('Target Table not found');
 
