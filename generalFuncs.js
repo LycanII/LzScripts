@@ -22,7 +22,7 @@ async function runForInsert(connection, query) {
 
     console.log(table);
 
-    let tblExist = true; //await tableExists(connection, table);
+    let tblExist = await tableExists(connection, table);
     if (!tblExist)
         throw new Error('Target Table not found');
 
