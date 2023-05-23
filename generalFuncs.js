@@ -10,15 +10,17 @@ async function runForInsert(connection, query) {
     let allowMultipleInsert = vscode.workspace.getConfiguration('LzScripts').get('allowInsertPerRow') === true;
     let insetStr = [];
 
-    let tableFull = getTableName(query).replaceAll(';','');
-    let breakdown = tableFull.split('.');
-    let table = breakdown[breakdown.length-1].replaceAll('[','').replaceAll(']','').replaceAll(';','');
+    let tableInfos = extractTableInfo(query);
+    let tableInfo = tableInfos.length > 0 ? tableInfos[0] : {};
+    let table = IsEmptyObj(tableInfo)  ? '' : tableInfo.table.replaceAll('[','').replaceAll(']','');
 
     //--> the place of sadness :(
     // let table = tableFull.indexOf('dbo') >= 0 ?
     //     tableFull.slice(tableFull.indexOf('dbo') + 4).replaceAll('.', '').replaceAll('[', '').replaceAll(']', '')
     //     : tableFull.replaceAll('.', '').replaceAll('[', '').replaceAll(']', '');
     //--> the place of sadness :(
+
+    console.log(table);
 
     let tblExist = await tableExists(connection, table);
     if (!tblExist)
@@ -29,7 +31,7 @@ async function runForInsert(connection, query) {
     if (data.rowCount == 0)
         throw new Error('No records found');
 
-    let ins = 'insert into ' + tableFull + ' (';
+    let ins = 'insert into ' + tableInfo.full + ' (';
 
     //--> get cols except identity , autogen cols
     for (let i = 0; i < data.columnInfo.length; i++) {
@@ -89,7 +91,7 @@ async function runForInsert(connection, query) {
     }
 
 
-    return PostProcessing(insetStr, tableFull, vscode.workspace.getConfiguration('LzScripts'));
+    return PostProcessing(insetStr, tableInfo.full, vscode.workspace.getConfiguration('LzScripts'));
 }
 
 
@@ -158,20 +160,61 @@ function getValue(displayValue, colinfo) {
 
     }
 }
-function getTableName(query) {
-    let ql = query.toLowerCase();
-    let indexFrom = ql.indexOf('from');
-    let indexJoin = ql.indexOf('join');
-    let indexOrder = ql.indexOf('order');
-    if (indexJoin > 0)
-        return ql.slice(indexFrom + 4, (indexJoin > 0 ? indexJoin : ql.length)).trim().split(' ')[0];
 
-    if (indexOrder > 0)
-        return ql.slice(indexFrom + 4, (indexOrder > 0 ? indexOrder : ql.length)).trim().split(' ')[0];
-
-    let indexWhere = ql.indexOf('where');
-    return ql.slice(indexFrom + 4, (indexWhere > 0 ? indexWhere : ql.length)).trim().split(' ')[0];
+function IsEmptyObj(obj)
+{
+    for(var i in obj) 
+        return false; 
+    return true;
 }
+
+function extractTableInfo(sql) {
+    let regex = /\bFROM\s+([\w\.\[\]]+)|\bJOIN\s+([\w\.\[\]]+)|\bUPDATE\s+([\w\.\[\]]+)|\bINTO\s+([\w\.\[\]]+)/ig;
+    let match;
+    let tables = [];
+
+    while ((match = regex.exec(sql)) !== null) {
+        let table = match.slice(1).find(m => m);
+        if (table) {
+            let parts = table.split(".");
+            let tableInfoObj = {};
+
+            if (parts.length === 3) {
+                tableInfoObj.database = parts[0];
+                tableInfoObj.schema = parts[1];
+                tableInfoObj.table = parts[2];
+                tableInfoObj.full = `${parts[0]}.${parts[1]}.${parts[2]}`;
+            } else if (parts.length === 2) {
+                tableInfoObj.schema = parts[0];
+                tableInfoObj.table = parts[1];
+                tableInfoObj.full = `${parts[0]}.${parts[1]}`;
+            } else {
+                tableInfoObj.table = parts[0];
+                tableInfoObj.full = `${parts[0]}`;
+            }
+
+            tables.push(tableInfoObj);
+        }
+    }
+
+    return tables;
+}
+
+//-->obsolete
+// function getTableName(query) {
+//     let ql = query.toLowerCase();
+//     let indexFrom = ql.indexOf('from');
+//     let indexJoin = ql.indexOf('join');
+//     let indexOrder = ql.indexOf('order');
+//     if (indexJoin > 0)
+//         return ql.slice(indexFrom + 4, (indexJoin > 0 ? indexJoin : ql.length)).trim().split(' ')[0];
+
+//     if (indexOrder > 0)
+//         return ql.slice(indexFrom + 4, (indexOrder > 0 ? indexOrder : ql.length)).trim().split(' ')[0];
+
+//     let indexWhere = ql.indexOf('where');
+//     return ql.slice(indexFrom + 4, (indexWhere > 0 ? indexWhere : ql.length)).trim().split(' ')[0];
+// }
 
 module.exports.runForInsert = runForInsert;
 module.exports.runQuery = runQuery;
