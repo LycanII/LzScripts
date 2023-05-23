@@ -12,7 +12,7 @@ async function runForInsert(connection, query) {
 
     let tableInfos = extractTableInfo(query);
     let tableInfo = tableInfos.length > 0 ? tableInfos[0] : {};
-    let table = tableInfo.length > 0 ? tableInfo.table : '';
+    let table = IsEmptyObj(tableInfo)  ? '' : tableInfo.table.replaceAll('[','').replaceAll(']','');
 
     //--> the place of sadness :(
     // let table = tableFull.indexOf('dbo') >= 0 ?
@@ -161,6 +161,12 @@ function getValue(displayValue, colinfo) {
     }
 }
 
+function IsEmptyObj(obj)
+{
+    for(var i in obj) 
+        return false; 
+    return true;
+}
 
 function extractTableInfo(sql) {
     let regex = /\bFROM\s+([\w\.\[\]]+)|\bJOIN\s+([\w\.\[\]]+)|\bUPDATE\s+([\w\.\[\]]+)|\bINTO\s+([\w\.\[\]]+)/ig;
@@ -181,7 +187,7 @@ function extractTableInfo(sql) {
             } else if (parts.length === 2) {
                 tableInfoObj.schema = parts[0];
                 tableInfoObj.table = parts[1];
-                tableInfoObj.full = `${parts[0]}.${parts[1]}}`;
+                tableInfoObj.full = `${parts[0]}.${parts[1]}`;
             } else {
                 tableInfoObj.table = parts[0];
                 tableInfoObj.full = `${parts[0]}`;
@@ -194,7 +200,7 @@ function extractTableInfo(sql) {
     return tables;
 }
 
-
+//-->obsolete
 // function getTableName(query) {
 //     let ql = query.toLowerCase();
 //     let indexFrom = ql.indexOf('from');
