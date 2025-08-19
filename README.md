@@ -5,6 +5,8 @@
 Here's a simple script generator for lazy devs like moi 😊.
 It generates Insert queries from a select query.
 
+We also have a vsCode version , check it out here ![Lz Scripts for Vscode](https://marketplace.visualstudio.com/items?itemName=fsy-dev.lz-scripts)
+
 ### How to Use
 In the editor, simply select, right-click on the SQL script and click on the `Generate Insert from Result` context menu, Select `To Clipboard` or `To New Tab` to generate query to the clipboard or a new tab respectively.
 
