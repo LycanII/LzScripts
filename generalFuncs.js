@@ -10,24 +10,29 @@ async function runForInsert(connection, query) {
     let allowMultipleInsert = vscode.workspace.getConfiguration('LzScripts').get('allowInsertPerRow') === true;
     let insetStr = [];
 
-    let tableInfos = extractTableInfo(query);
+    let openPar = '';
+    let closePar = '';
+    if (connection.providerId == "MSSQL") {
+       openPar = ' [';
+       closePar = ']'; 
+    }
+
+    let tableInfos = extractTableInfo(query, connection.providerId);
     let tableInfo = tableInfos.length > 0 ? tableInfos[0] : {};
     let table = IsEmptyObj(tableInfo)  ? '' : tableInfo.table.replaceAll('[','').replaceAll(']','');
 
+	
     //--> the place of sadness :(
     // let table = tableFull.indexOf('dbo') >= 0 ?
     //     tableFull.slice(tableFull.indexOf('dbo') + 4).replaceAll('.', '').replaceAll('[', '').replaceAll(']', '')
     //     : tableFull.replaceAll('.', '').replaceAll('[', '').replaceAll(']', '');
     //--> the place of sadness :(
-
-    console.log(table);
-
-    let tblExist = await tableExists(connection, table);
+    let tblExist = await tableExists(connection, table, tableInfo.database);
     if (!tblExist)
-        throw new Error('Target Table not found');
+        throw new Error(`Target Table ${table} not found`);
 
 
-    let data = await runQuery(connection, query);
+    let data = await runQuery(connection, query, tableInfo.database);
     if (data.rowCount == 0)
         throw new Error('No records found');
 
@@ -39,7 +44,7 @@ async function runForInsert(connection, query) {
             continue;
 
         if (data.columnInfo[i].dataTypeName !== 'timestamp')
-            ins += (' [' + data.columnInfo[i].columnName + '] ,');
+            ins += (openPar + data.columnInfo[i].columnName + closePar +' ,');
     }
     //--> remove last comma
     ins = ins.slice(0, ins.length - 1);
@@ -114,14 +119,19 @@ function PostProcessing(insetStr, table, config) {
  * @param {azdata.connection.ConnectionProfile} connection
  * @param {string} query
  */
-async function runQuery(connection, query) {
+async function runQuery(connection, query, database = null) {
 
     try {
         if (connection == null)
             throw new Error('No Connection Found');
         let conProvider = azdata.dataprotocol.getProvider(connection.providerId, azdata.DataProviderType.ConnectionProvider);
-        await conProvider.changeDatabase(connection.connectionId, connection.databaseName);
         let connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+	if (connection.providerId == 'MSSQL') {
+
+	   if(database && database != connection.databaseName) {
+	   	await conProvider.changeDatabase(connectionUri, database);
+           }
+	}
 
 
         let queryProvider = azdata.dataprotocol.getProvider(connection.providerId, azdata.DataProviderType.QueryProvider);
@@ -134,13 +144,11 @@ async function runQuery(connection, query) {
  * @param {azdata.connection.ConnectionProfile} connection
  * @param {string} table
  */
-async function tableExists(connection, table) {
-    let qstr = `IF EXISTS (SELECT 1 
-        FROM INFORMATION_SCHEMA.TABLES 
-        WHERE TABLE_TYPE='BASE TABLE' 
-        AND TABLE_NAME='${table}') 
-        SELECT 1 AS res ELSE SELECT 0 AS res;`;
-    let res = await runQuery(connection, qstr);
+async function tableExists(connection, table, database) {
+    let qstr = `select case when 
+	(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and 
+	TABLE_NAME = '${table}') = 1 THEN 1 ELSE 0 END as res;`;
+    let res = await runQuery(connection, qstr, database);
     return res.rows[0][0].displayValue === "1";
 }
 function getValue(displayValue, colinfo) {
@@ -168,7 +176,7 @@ function IsEmptyObj(obj)
     return true;
 }
 
-function extractTableInfo(sql) {
+function extractTableInfo(sql, providerId) {
     let regex = /\bFROM\s+([\w\.\[\]]+)|\bJOIN\s+([\w\.\[\]]+)|\bUPDATE\s+([\w\.\[\]]+)|\bINTO\s+([\w\.\[\]]+)/ig;
     let match;
     let tables = [];
@@ -178,17 +186,22 @@ function extractTableInfo(sql) {
         if (table) {
             let parts = table.split(".");
             let tableInfoObj = {};
-
-            if (parts.length === 3) {
-                tableInfoObj.database = parts[0];
-                tableInfoObj.schema = parts[1];
-                tableInfoObj.table = parts[2];
-                tableInfoObj.full = `${parts[0]}.${parts[1]}.${parts[2]}`;
-            } else if (parts.length === 2) {
+	    tableInfoObj.database = null;
+	
+	    if ( providerId == 'MSSQL' ){
+		if (parts.length === 3) {
+		        tableInfoObj.database = parts[0];
+		        tableInfoObj.schema = parts[1];
+		        tableInfoObj.table = parts[2];
+		        tableInfoObj.full = `${parts[0]}.${parts[1]}.${parts[2]}`;
+		} 
+	    } 
+	    if (parts.length === 2) {
                 tableInfoObj.schema = parts[0];
                 tableInfoObj.table = parts[1];
                 tableInfoObj.full = `${parts[0]}.${parts[1]}`;
-            } else {
+            }
+	    if (parts.length === 1){
                 tableInfoObj.table = parts[0];
                 tableInfoObj.full = `${parts[0]}`;
             }
